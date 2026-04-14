@@ -80,13 +80,13 @@ Railway supports persistent disks and long-lived connections, which are required
    NODE_ENV=production
    PORT=3000
    ```
-5. Update the build command in Railway settings:
+5. Build command:
    ```
-   npm run build && npx prisma migrate deploy
+   npm run build
    ```
-6. Start command:
+6. Start command (runs migrations on each deploy, then starts the server):
    ```
-   npm run start
+   npx prisma migrate deploy && npm run start
    ```
 
 ### Option B: Fly.io
