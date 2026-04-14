@@ -16,7 +16,7 @@ export function useEventSource(url: string | null, onMessage: (data: unknown) =>
     let retryTimeout: ReturnType<typeof setTimeout>;
 
     function connect() {
-      es = new EventSource(url);
+      es = new EventSource(url as string);
 
       es.onmessage = (event) => {
         try {
