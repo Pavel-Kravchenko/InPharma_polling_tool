@@ -65,29 +65,50 @@ For production, this should point to a persistent SQLite file path on your serve
 | Participant | `/join` | Mobile voting interface (enter room code) |
 | Embed | `/embed/{questionId}` | Presentation-ready live results |
 
+## Build & Run Commands
+
+| Step | Command | When |
+|------|---------|------|
+| Install dependencies | `npm ci` | After clone. Also runs `prisma generate` via postinstall hook. |
+| Generate Prisma client | `npx prisma generate` | Automatic via postinstall. Run manually if needed. |
+| Build for production | `npm run build` | Before deploying. Compiles Next.js and checks TypeScript. |
+| Run database migrations | `npx prisma migrate deploy` | At server start, before `npm run start`. |
+| Start production server | `npm run start` | After build + migrate. Serves on port 3000. |
+| Start dev server | `npm run dev` | Local development only. |
+| Seed sample data | `npx prisma db seed` | Optional. Creates a demo presentation with sample questions. |
+| Create new migration | `npx prisma migrate dev` | Local dev only, after editing `prisma/schema.prisma`. |
+
 ## Deploying to a Server
+
+### Prerequisites
+
+- **Node.js 20+**
+- **Persistent filesystem** for the SQLite database (the `.db` file must survive redeploys)
+- **Long-lived connections** support for SSE (no short function timeouts)
+
+> **Vercel is not supported.** Serverless function timeouts kill SSE connections, and the ephemeral filesystem loses the database on each deploy.
 
 ### Option A: Railway (Recommended)
 
-Railway supports persistent disks and long-lived connections, which are required for SQLite and SSE.
-
-1. Create a new project on [Railway](https://railway.app)
-2. Connect your GitHub repository
-3. Add a persistent volume mounted at `/data`
-4. Set environment variables:
+1. Create a new project on [Railway](https://railway.app) and connect your GitHub repo
+2. Add a **persistent volume** mounted at `/data`
+3. Set environment variables:
    ```
    DATABASE_URL=file:/data/inpharma.db
    NODE_ENV=production
    PORT=3000
    ```
-5. Build command:
+4. Set the **build command**:
    ```
    npm run build
    ```
-6. Start command (runs migrations on each deploy, then starts the server):
+   > `npm ci` runs automatically before this and triggers `prisma generate` via the postinstall hook.
+5. Set the **start command**:
    ```
    npx prisma migrate deploy && npm run start
    ```
+   > Migrations run at start time because the persistent volume is only available at runtime, not during the build phase.
+6. Deploy. Railway will build and start the app automatically on each push.
 
 ### Option B: Fly.io
 
@@ -141,20 +162,20 @@ Railway supports persistent disks and long-lived connections, which are required
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
 sudo apt-get install -y nodejs
 
-# 2. Clone and install
+# 2. Clone and install (postinstall runs prisma generate automatically)
 git clone https://github.com/Pavel-Kravchenko/InPharma_polling_tool.git
 cd InPharma_polling_tool
-npm ci --production=false
+npm ci
 
 # 3. Configure environment
-echo 'DATABASE_URL="file:/var/lib/inpharma/inpharma.db"' > .env
 sudo mkdir -p /var/lib/inpharma
+echo 'DATABASE_URL="file:/var/lib/inpharma/inpharma.db"' > .env
 
-# 4. Build and migrate
+# 4. Build
 npm run build
-npx prisma migrate deploy
 
-# 5. Start with a process manager
+# 5. Run migrations and start
+npx prisma migrate deploy
 npm install -g pm2
 pm2 start npm --name "inpharma" -- start
 pm2 save
