@@ -1,0 +1,40 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Presentation {
+  id        String     @id @default(cuid())
+  title     String
+  roomCode  String     @unique
+  createdAt DateTime   @default(now())
+  questions Question[]
+}
+
+model Question {
+  id             String       @id @default(cuid())
+  presentationId String
+  presentation   Presentation @relation(fields: [presentationId], references: [id], onDelete: Cascade)
+  type           String       // "multiple_choice" | "word_cloud" | "rating_scale"
+  title          String
+  options        String?      // JSON array for MC options
+  scaleMin       Int?
+  scaleMax       Int?
+  scaleMinLabel  String?
+  scaleMaxLabel  String?
+  order          Int
+  isActive       Boolean      @default(false)
+  votes          Vote[]
+}
+
+model Vote {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  value      String
+  deviceId   String
+  createdAt  DateTime @default(now())
+}
