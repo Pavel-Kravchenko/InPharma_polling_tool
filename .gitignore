@@ -50,3 +50,8 @@ prisma/dev.db-journal
 
 # superpowers
 .superpowers/
+
+# local images
+*.jpeg
+*.png
+!public/*.png

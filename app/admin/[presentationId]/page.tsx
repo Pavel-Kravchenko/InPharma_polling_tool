@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
+import { AdminGuard } from "../AdminGuard";
+import type { AuthFetch } from "@/lib/useAdminAuth";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -275,14 +277,15 @@ function QuestionForm({
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// ─── Inner Editor ────────────────────────────────────────────────────────────
 
-export default function PresentationEditor({
-  params,
+function PresentationEditorInner({
+  presentationId,
+  authFetch,
 }: {
-  params: Promise<{ presentationId: string }>;
+  presentationId: string;
+  authFetch: AuthFetch;
 }) {
-  const { presentationId } = use(params);
   const router = useRouter();
 
   const [presentation, setPresentation] = useState<Presentation | null>(null);
@@ -291,7 +294,6 @@ export default function PresentationEditor({
   const [voteCounts, setVoteCounts] = useState<Record<string, number>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Modal state
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [saving, setSaving] = useState(false);
@@ -301,23 +303,20 @@ export default function PresentationEditor({
   const [roomCodeCopied, setRoomCodeCopied] = useState(false);
 
   const fetchPresentation = useCallback(async () => {
-    const res = await fetch(`/api/presentations/${presentationId}`);
+    const res = await authFetch(`/api/presentations/${presentationId}`);
     if (!res.ok) { router.push("/admin"); return; }
     const data: Presentation = await res.json();
     setPresentation(data);
     setLoading(false);
 
-    // Generate QR code
     const joinUrl = `${window.location.origin}/join/${data.roomCode}`;
     QRCode.toDataURL(joinUrl, { width: 200, margin: 2 }).then(setQrDataUrl);
 
-    // Fetch vote counts
     const counts: Record<string, number> = {};
     await Promise.all(
       data.questions.map(async (q) => {
         const r = await fetch(`/api/questions/${q.id}/results`);
         const results = await r.json();
-        // Total votes = sum of all values
         let total = 0;
         if (results.counts) {
           total = Object.values(results.counts as Record<string, number>).reduce((a, b) => a + b, 0);
@@ -328,7 +327,7 @@ export default function PresentationEditor({
       })
     );
     setVoteCounts(counts);
-  }, [presentationId, router]);
+  }, [presentationId, router, authFetch]);
 
   useEffect(() => {
     fetchPresentation();
@@ -336,7 +335,7 @@ export default function PresentationEditor({
 
   async function handleActivate(questionId: string) {
     setActivating(questionId);
-    await fetch(`/api/presentations/${presentationId}/activate`, {
+    await authFetch(`/api/presentations/${presentationId}/activate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ questionId }),
@@ -348,7 +347,7 @@ export default function PresentationEditor({
   async function handleDeleteQuestion(q: Question) {
     if (!confirm(`Delete question "${q.title}"?`)) return;
     setDeletingId(q.id);
-    await fetch(`/api/questions/${q.id}`, { method: "DELETE" });
+    await authFetch(`/api/questions/${q.id}`, { method: "DELETE" });
     await fetchPresentation();
     setDeletingId(null);
   }
@@ -369,7 +368,7 @@ export default function PresentationEditor({
       body.scaleMinLabel = form.scaleMinLabel || null;
       body.scaleMaxLabel = form.scaleMaxLabel || null;
     }
-    await fetch("/api/questions", {
+    await authFetch("/api/questions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -392,7 +391,7 @@ export default function PresentationEditor({
       body.scaleMinLabel = form.scaleMinLabel || null;
       body.scaleMaxLabel = form.scaleMaxLabel || null;
     }
-    await fetch(`/api/questions/${editingQuestion.id}`, {
+    await authFetch(`/api/questions/${editingQuestion.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -408,7 +407,7 @@ export default function PresentationEditor({
     setResettingAll(true);
     await Promise.all(
       presentation.questions.map((q) =>
-        fetch(`/api/questions/${q.id}/reset`, { method: "POST" })
+        authFetch(`/api/questions/${q.id}/reset`, { method: "POST" })
       )
     );
     await fetchPresentation();
@@ -445,13 +444,12 @@ export default function PresentationEditor({
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f5f0e8" }}>
-      {/* Header */}
       <header style={{ backgroundColor: "#1a3a5c" }} className="px-8 py-5 flex items-center gap-4 shadow">
         <button
           onClick={() => router.push("/admin")}
           className="text-white/70 hover:text-white transition-colors text-sm flex items-center gap-1"
         >
-          ← Back
+          &larr; Back
         </button>
         <div className="flex-1 min-w-0">
           <h1 className="text-xl font-bold text-white truncate">{presentation.title}</h1>
@@ -462,7 +460,6 @@ export default function PresentationEditor({
       <main className="max-w-4xl mx-auto px-6 py-8 space-y-8">
         {/* Presentation Info */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row gap-6 items-start">
-          {/* QR Code */}
           <div className="flex-shrink-0 flex flex-col items-center gap-2">
             {qrDataUrl ? (
               <img src={qrDataUrl} alt="QR Code" className="rounded-lg border border-gray-200" style={{ width: 140, height: 140 }} />
@@ -474,7 +471,6 @@ export default function PresentationEditor({
             <p className="text-xs text-gray-500">Scan to join</p>
           </div>
 
-          {/* Room Info */}
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-500 mb-1">Room Code</p>
             <div className="flex items-center gap-3 mb-4">
@@ -503,8 +499,6 @@ export default function PresentationEditor({
             </p>
             <p className="text-sm text-gray-400 mt-2">
               {presentation.questions.length} question{presentation.questions.length !== 1 ? "s" : ""}
-              {" · "}
-              <span className="italic">Participants: —</span>
             </p>
           </div>
         </div>
@@ -531,7 +525,6 @@ export default function PresentationEditor({
                   }}
                 >
                   <div className="px-5 py-4 flex items-start gap-4">
-                    {/* Number badge */}
                     <div
                       className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
                       style={{ backgroundColor: q.isActive ? "#e8632b" : "#1a3a5c" }}
@@ -539,7 +532,6 @@ export default function PresentationEditor({
                       {idx + 1}
                     </div>
 
-                    {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-0.5">
                         <p className="font-medium text-sm" style={{ color: "#1a3a5c" }}>{q.title}</p>
@@ -563,7 +555,6 @@ export default function PresentationEditor({
                       </div>
                     </div>
 
-                    {/* Actions */}
                     <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
                       <button
                         onClick={() => handleActivate(q.id)}
@@ -610,7 +601,6 @@ export default function PresentationEditor({
             </div>
           )}
 
-          {/* Add Question Button */}
           <button
             onClick={() => setShowAddForm(true)}
             className="mt-4 w-full py-3 rounded-xl border-2 border-dashed text-sm font-medium transition-colors hover:border-orange-400 hover:text-orange-500"
@@ -656,5 +646,26 @@ export default function PresentationEditor({
         </div>
       )}
     </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
+export default function PresentationEditor({
+  params,
+}: {
+  params: Promise<{ presentationId: string }>;
+}) {
+  const { presentationId } = use(params);
+
+  return (
+    <AdminGuard>
+      {(authFetch) => (
+        <PresentationEditorInner
+          presentationId={presentationId}
+          authFetch={authFetch}
+        />
+      )}
+    </AdminGuard>
   );
 }

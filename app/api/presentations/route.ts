@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { checkAdminAuth } from "@/lib/adminAuth";
 
 export async function GET() {
   const presentations = await prisma.presentation.findMany({
@@ -19,6 +20,9 @@ async function generateRoomCode(): Promise<string> {
 }
 
 export async function POST(request: Request) {
+  const denied = checkAdminAuth(request);
+  if (denied) return denied;
+
   const body = await request.json();
   const { title } = body;
 

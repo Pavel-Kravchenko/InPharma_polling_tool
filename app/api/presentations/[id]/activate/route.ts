@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { eventBus } from "@/lib/events";
+import { checkAdminAuth } from "@/lib/adminAuth";
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const denied = checkAdminAuth(request);
+  if (denied) return denied;
+
   const { id } = await params;
   const body = await request.json();
   const { questionId } = body;

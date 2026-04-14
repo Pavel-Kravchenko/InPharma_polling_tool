@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { checkAdminAuth } from "@/lib/adminAuth";
 
 export async function GET(
   _request: Request,
@@ -19,9 +20,12 @@ export async function GET(
 }
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const denied = checkAdminAuth(request);
+  if (denied) return denied;
+
   const { id } = await params;
   const presentation = await prisma.presentation.findUnique({ where: { id } });
 

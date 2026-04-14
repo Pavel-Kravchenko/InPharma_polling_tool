@@ -2,8 +2,10 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import path from "path";
 
-const dbPath = path.resolve(process.cwd(), "prisma/dev.db");
-const adapter = new PrismaBetterSqlite3({ url: dbPath });
+const dbUrl = process.env.DATABASE_URL ?? "file:./prisma/dev.db";
+const dbPath = dbUrl.startsWith("file:") ? dbUrl.slice(5) : dbUrl;
+const resolvedPath = path.isAbsolute(dbPath) ? dbPath : path.resolve(process.cwd(), dbPath);
+const adapter = new PrismaBetterSqlite3({ url: resolvedPath });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
@@ -39,6 +41,11 @@ async function main() {
             scaleMinLabel: "Not at all",
             scaleMaxLabel: "Very confident",
             order: 3,
+          },
+          {
+            type: "word_cloud",
+            title: "What is your biggest fear about job searching?",
+            order: 4,
           },
         ],
       },
