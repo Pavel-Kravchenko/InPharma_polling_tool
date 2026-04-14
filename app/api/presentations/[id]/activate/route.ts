@@ -23,7 +23,7 @@ export async function POST(
     return NextResponse.json({ error: "Presentation not found" }, { status: 404 });
   }
 
-  const targetQuestion = presentation.questions.find((q) => q.id === questionId);
+  const targetQuestion = presentation.questions.find((q: { id: string }) => q.id === questionId);
   if (!targetQuestion) {
     return NextResponse.json(
       { error: "Question not found in this presentation" },
