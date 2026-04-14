@@ -1,6 +1,6 @@
 # InPharma meter — Design Spec
 
-A live audience polling tool for pharmaceutical symposia and academic events, similar to Mentimeter. Participants scan a QR code or enter a room code to vote from their phones; results update in real-time and are embedded directly into presentation slides.
+A live audience polling tool for pharmaceutical symposia and academic events. Participants scan a QR code or enter a room code to vote from their phones; results update in real-time and are embedded directly into presentation slides.
 
 ## Branding
 
