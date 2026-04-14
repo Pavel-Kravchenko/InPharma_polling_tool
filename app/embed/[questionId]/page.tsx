@@ -80,7 +80,7 @@ export default function EmbedPage() {
     });
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
+  }, [question, results]);
 
   // Fetch question and initial results
   useEffect(() => {
@@ -164,7 +164,7 @@ export default function EmbedPage() {
       {/* Visualization area — takes remaining space */}
       <div
         ref={vizRef}
-        className="flex-1 flex items-center justify-center px-4 pb-8 w-full max-w-4xl mx-auto"
+        className="flex-1 flex items-center justify-center px-4 pb-8 w-full max-w-4xl mx-auto min-h-[300px]"
       >
         {question.type === "multiple_choice" && isMCResults(results) && (
           <BarChart counts={results.counts} options={options} />
