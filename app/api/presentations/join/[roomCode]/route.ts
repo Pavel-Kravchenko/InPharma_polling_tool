@@ -20,7 +20,7 @@ export async function GET(
     return NextResponse.json({ error: "Presentation not found" }, { status: 404 });
   }
 
-  const activeQuestion = presentation.questions.find((q) => q.isActive) ?? null;
+  const activeQuestion = presentation.questions.find((q: { isActive: boolean }) => q.isActive) ?? null;
 
   return NextResponse.json({ ...presentation, activeQuestion });
 }

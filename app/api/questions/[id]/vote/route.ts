@@ -26,7 +26,7 @@ export async function POST(
 
   // Emit updated results after vote
   const allVotes = await prisma.vote.findMany({ where: { questionId: id } });
-  const results = aggregateResults(question.type, allVotes.map((v) => v.value));
+  const results = aggregateResults(question.type, allVotes.map((v: { value: string }) => v.value));
   eventBus.emit(`question:${id}`, { type: "vote_update", results });
 
   return NextResponse.json(vote, { status: 201 });

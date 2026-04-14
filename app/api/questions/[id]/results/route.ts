@@ -15,7 +15,7 @@ export async function GET(
     return NextResponse.json({ error: "Question not found" }, { status: 404 });
   }
 
-  const results = aggregateResults(question.type, question.votes.map((v) => v.value));
+  const results = aggregateResults(question.type, question.votes.map((v: { value: string }) => v.value));
 
   return NextResponse.json(results);
 }
