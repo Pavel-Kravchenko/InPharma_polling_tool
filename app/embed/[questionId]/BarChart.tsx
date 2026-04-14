@@ -11,48 +11,57 @@ export default function BarChart({ counts, options }: BarChartProps) {
   const maxCount = Math.max(...options.map((o) => counts[o] ?? 0), 1);
 
   return (
-    <div className="flex items-end justify-center gap-4 w-full h-full px-4">
-      {options.map((option, i) => {
-        const count = counts[option] ?? 0;
-        const heightPct = (count / maxCount) * 100;
-        const color = BAR_COLORS[i % BAR_COLORS.length];
+    <div className="flex flex-col items-center w-full h-full px-6">
+      {/* Bars area */}
+      <div className="flex items-end justify-center gap-6 w-full flex-1 min-h-0">
+        {options.map((option, i) => {
+          const count = counts[option] ?? 0;
+          const heightPct = (count / maxCount) * 100;
+          const color = BAR_COLORS[i % BAR_COLORS.length];
 
-        return (
-          <div key={option} className="flex flex-col items-center flex-1 min-w-0" style={{ maxWidth: "120px" }}>
-            {/* Count above bar */}
-            <span
-              className="text-sm font-bold mb-1 tabular-nums"
-              style={{ color: "#1a3a5c", minHeight: "1.25rem" }}
-            >
-              {count > 0 ? count : ""}
-            </span>
+          return (
+            <div key={option} className="flex flex-col items-center flex-1 min-w-0 h-full" style={{ maxWidth: "180px" }}>
+              {/* Count above bar */}
+              <span
+                className="font-bold mb-2 tabular-nums"
+                style={{ color: "#1a3a5c", fontSize: "clamp(18px, 2.5vw, 28px)", minHeight: "2rem" }}
+              >
+                {count > 0 ? count : ""}
+              </span>
 
-            {/* Bar container — fixed height so bars grow from a baseline */}
-            <div className="w-full flex items-end" style={{ height: "200px" }}>
-              <div
-                className="w-full rounded-t-md"
-                style={{
-                  height: `${heightPct}%`,
-                  backgroundColor: color,
-                  transition: "height 500ms ease-out",
-                  minHeight: count > 0 ? "4px" : "0px",
-                }}
-              />
+              {/* Bar — grows from bottom */}
+              <div className="w-full flex items-end flex-1 min-h-0">
+                <div
+                  className="w-full rounded-t-lg"
+                  style={{
+                    height: `${heightPct}%`,
+                    backgroundColor: color,
+                    transition: "height 500ms ease-out",
+                    minHeight: count > 0 ? "6px" : "0px",
+                  }}
+                />
+              </div>
             </div>
+          );
+        })}
+      </div>
 
-            {/* Baseline */}
-            <div className="w-full h-px" style={{ backgroundColor: "#1a3a5c", opacity: 0.3 }} />
+      {/* Shared baseline */}
+      <div className="w-full" style={{ height: "2px", backgroundColor: "#1a3a5c", opacity: 0.25 }} />
 
-            {/* Option label below bar */}
+      {/* Labels row */}
+      <div className="flex justify-center gap-6 w-full mt-3">
+        {options.map((option, i) => (
+          <div key={option} className="flex-1 min-w-0" style={{ maxWidth: "180px" }}>
             <span
-              className="text-xs text-center mt-2 leading-tight line-clamp-2"
-              style={{ color: "#1a3a5c", wordBreak: "break-word" }}
+              className="block text-center leading-snug font-medium"
+              style={{ color: "#1a3a5c", fontSize: "clamp(13px, 1.5vw, 18px)", wordBreak: "break-word" }}
             >
               {option}
             </span>
           </div>
-        );
-      })}
+        ))}
+      </div>
     </div>
   );
 }
