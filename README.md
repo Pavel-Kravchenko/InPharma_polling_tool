@@ -105,9 +105,9 @@ For production, this should point to a persistent SQLite file path on your serve
    > `npm ci` runs automatically before this and triggers `prisma generate` via the postinstall hook.
 5. Set the **start command**:
    ```
-   npx prisma migrate deploy && npm run start
+   npx prisma migrate deploy && node prisma/seed-prod.mjs && npm run start
    ```
-   > Migrations run at start time because the persistent volume is only available at runtime, not during the build phase.
+   > Migrations and seed run at start time because the persistent volume is only available at runtime, not during the build phase. The seed is idempotent — it only creates the default presentation if it doesn't exist.
 6. Deploy. Railway will build and start the app automatically on each push.
 
 ### Option B: Fly.io
