@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { eventBus } from "@/lib/events";
 import { aggregateResults } from "../results/route";
+import { containsProfanity } from "@/lib/profanityFilter";
 
 export async function POST(
   request: Request,
@@ -18,6 +19,11 @@ export async function POST(
   const question = await prisma.question.findUnique({ where: { id } });
   if (!question) {
     return NextResponse.json({ error: "Question not found" }, { status: 404 });
+  }
+
+  // Filter profanity on free-text submissions (word cloud)
+  if (question.type === "word_cloud" && containsProfanity(value)) {
+    return NextResponse.json({ error: "Please keep responses appropriate." }, { status: 400 });
   }
 
   const vote = await prisma.vote.create({
