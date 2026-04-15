@@ -63,16 +63,23 @@ export default function WordCloud({ frequency, width, height }: WordCloudProps) 
     const scaleFactor = Math.max(0.08, 0.25 - wordCount * 0.012);
     const maxFontSize = Math.min(width, height) * scaleFactor;
 
-    const words: CloudWord[] = entries.map(([text, value]) => ({ text, value }));
+    // Truncate long text so d3-cloud can always place it
+    const words: CloudWord[] = entries.map(([text, value]) => ({
+      text: text.length > 30 ? text.slice(0, 28) + "…" : text,
+      value,
+    }));
 
     if (layoutRef.current) {
       layoutRef.current.stop();
     }
 
+    // Estimate max text pixel width to cap font size per word
+    const maxTextWidth = width * 0.45;
+
     const layout = cloudLayout()
       .size([width, height])
       .words(words)
-      .padding(2)
+      .padding(1)
       .rotate(() => 0)
       .spiral("rectangular")
       .font("sans-serif")
@@ -80,10 +87,10 @@ export default function WordCloud({ frequency, width, height }: WordCloudProps) 
       .fontSize((d: CloudWord) => {
         const ratio = maxCount > 1 ? (d.value ?? 1) / maxCount : 1;
         const baseSize = minFontSize + ratio * (maxFontSize - minFontSize);
-        // Shrink font for long text so it fits in the layout
+        // Cap font so text width stays under ~45% of container
         const textLen = (d.text ?? "").length;
-        const lengthPenalty = textLen > 10 ? Math.max(0.4, 1 - (textLen - 10) * 0.02) : 1;
-        return Math.max(10, baseSize * lengthPenalty);
+        const maxFontForWidth = textLen > 0 ? maxTextWidth / (textLen * 0.6) : baseSize;
+        return Math.max(10, Math.min(baseSize, maxFontForWidth));
       })
       .on("end", (placed: CloudWord[]) => {
         setLayoutWords(
