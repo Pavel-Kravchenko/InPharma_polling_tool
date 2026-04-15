@@ -59,8 +59,8 @@ export default function WordCloud({ frequency, width, height }: WordCloudProps) 
 
     const maxCount = Math.max(...entries.map(([, v]) => v));
     const wordCount = entries.length;
-    const minFontSize = Math.max(25, 35 - wordCount * 0.75);
-    const scaleFactor = Math.max(0.15, 0.45 - wordCount * 0.02);
+    const minFontSize = Math.max(12, 24 - wordCount * 0.8);
+    const scaleFactor = Math.max(0.08, 0.25 - wordCount * 0.012);
     const maxFontSize = Math.min(width, height) * scaleFactor;
 
     const words: CloudWord[] = entries.map(([text, value]) => ({ text, value }));

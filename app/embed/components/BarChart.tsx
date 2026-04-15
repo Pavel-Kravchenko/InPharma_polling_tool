@@ -53,7 +53,7 @@ export default function BarChart({ counts, options }: BarChartProps) {
           <div key={option} className="flex-1 min-w-0" style={{ maxWidth: "300px" }}>
             <span
               className="block text-center leading-snug font-medium"
-              style={{ color: "#1a3a5c", fontSize: "clamp(35px, 3.5vw, 50px)", wordBreak: "break-word" }}
+              style={{ color: "#1a3a5c", fontSize: "clamp(16px, 1.8vw, 24px)", wordBreak: "break-word" }}
             >
               {option}
             </span>

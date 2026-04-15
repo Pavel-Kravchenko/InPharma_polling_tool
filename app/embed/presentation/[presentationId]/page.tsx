@@ -331,7 +331,7 @@ export default function PresentationEmbedPage() {
 
         {qrDataUrl && (
           <div className="absolute bottom-4 left-4">
-            <img src={qrDataUrl} alt="Join" className="rounded" style={{ width: 140, height: 140, opacity: 0.85 }} />
+            <img src={qrDataUrl} alt="Join" className="rounded" style={{ width: 200, height: 200, opacity: 0.85 }} />
           </div>
         )}
 
@@ -404,7 +404,7 @@ export default function PresentationEmbedPage() {
       {/* QR code — bottom left */}
       {qrDataUrl && (
         <div className="absolute bottom-4 left-4">
-          <img src={qrDataUrl} alt="Join" className="rounded" style={{ width: 140, height: 140, opacity: 0.85 }} />
+          <img src={qrDataUrl} alt="Join" className="rounded" style={{ width: 200, height: 200, opacity: 0.85 }} />
         </div>
       )}
 

@@ -200,7 +200,7 @@ export default function EmbedPage() {
       {/* QR code — bottom left */}
       {qrDataUrl && (
         <div className="absolute bottom-3 left-4">
-          <img src={qrDataUrl} alt="Join" className="rounded" style={{ width: 140, height: 140, opacity: 0.85 }} />
+          <img src={qrDataUrl} alt="Join" className="rounded" style={{ width: 200, height: 200, opacity: 0.85 }} />
         </div>
       )}
 

@@ -60,9 +60,20 @@ async function main() {
             order: 4,
           },
           {
+            type: "multiple_choice",
+            title: "What stage of job searching are you in?",
+            options: JSON.stringify([
+              "Not started yet",
+              "Exploring options",
+              "Actively applying",
+              "Have offers / decided",
+            ]),
+            order: 5,
+          },
+          {
             type: "word_cloud",
             title: "What do you hope to gain from today's event?",
-            order: 5,
+            order: 6,
           },
         ],
       },
