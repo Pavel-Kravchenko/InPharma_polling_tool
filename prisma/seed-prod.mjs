@@ -31,17 +31,22 @@ async function main() {
         create: [
           {
             type: "multiple_choice",
+            title: "Are you currently looking for a job?",
+            options: JSON.stringify([
+              "Yes, I am actively searching and applying.",
+              "No, but I will start looking soon.",
+              "No, I have a year or more until I have to look for a job, but I am exploring options.",
+            ]),
+            order: 1,
+          },
+          {
+            type: "multiple_choice",
             title: "Are you deciding between academia and an alternative career path?",
             options: JSON.stringify([
               "Leaning towards academia",
               "Leaning towards industry",
               "Undecided",
             ]),
-            order: 1,
-          },
-          {
-            type: "word_cloud",
-            title: "What do you hope to gain from this event?",
             order: 2,
           },
           {
@@ -59,13 +64,8 @@ async function main() {
             order: 4,
           },
           {
-            type: "multiple_choice",
-            title: "Are you currently looking for a job?",
-            options: JSON.stringify([
-              "Yes, I am actively searching and applying.",
-              "No, but I will start looking soon.",
-              "No, I have a year or more until I have to look for a job, but I am exploring options.",
-            ]),
+            type: "word_cloud",
+            title: "What do you hope to gain from this event?",
             order: 5,
           },
         ],
