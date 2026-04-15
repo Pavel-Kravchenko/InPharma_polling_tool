@@ -24,7 +24,7 @@ export default function BarChart({ counts, options }: BarChartProps) {
               {/* Count above bar */}
               <span
                 className="font-bold mb-4 tabular-nums"
-                style={{ color: "#1a3a5c", fontSize: "clamp(100px, 12vw, 160px)" }}
+                style={{ color: "#1a3a5c", fontSize: "clamp(50px, 6vw, 80px)" }}
               >
                 {count > 0 ? count : ""}
               </span>
@@ -53,7 +53,7 @@ export default function BarChart({ counts, options }: BarChartProps) {
           <div key={option} className="flex-1 min-w-0" style={{ maxWidth: "300px" }}>
             <span
               className="block text-center leading-snug font-medium"
-              style={{ color: "#1a3a5c", fontSize: "clamp(70px, 7vw, 100px)", wordBreak: "break-word" }}
+              style={{ color: "#1a3a5c", fontSize: "clamp(35px, 3.5vw, 50px)", wordBreak: "break-word" }}
             >
               {option}
             </span>

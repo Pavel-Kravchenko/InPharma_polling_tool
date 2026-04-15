@@ -102,7 +102,7 @@ export default function EmbedPage() {
         setResults(r);
         if (q.presentation?.roomCode) {
           const joinUrl = `${window.location.origin}/join/${q.presentation.roomCode}`;
-          QRCode.toDataURL(joinUrl, { width: 120, margin: 1 }).then(setQrDataUrl);
+          QRCode.toDataURL(joinUrl, { width: 200, margin: 1 }).then(setQrDataUrl);
         }
       })
       .catch(() => setError("Question not found."));
@@ -200,7 +200,7 @@ export default function EmbedPage() {
       {/* QR code — bottom left */}
       {qrDataUrl && (
         <div className="absolute bottom-3 left-4">
-          <img src={qrDataUrl} alt="Join" className="rounded" style={{ width: 80, height: 80, opacity: 0.85 }} />
+          <img src={qrDataUrl} alt="Join" className="rounded" style={{ width: 140, height: 140, opacity: 0.85 }} />
         </div>
       )}
 

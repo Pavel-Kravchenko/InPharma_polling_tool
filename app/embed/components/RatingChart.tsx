@@ -41,7 +41,7 @@ export default function RatingChart({
     <div className="flex flex-col gap-4 w-full px-4">
       {/* Scale labels */}
       {(scaleMinLabel || scaleMaxLabel) && (
-        <div className="flex justify-between mb-2" style={{ color: "#1a3a5c", opacity: 0.65, fontSize: "clamp(30px, 4vw, 60px)" }}>
+        <div className="flex justify-between mb-2" style={{ color: "#1a3a5c", opacity: 0.65, fontSize: "clamp(15px, 2vw, 30px)" }}>
           <span>{scaleMinLabel ? `${scaleMin} = ${scaleMinLabel}` : ""}</span>
           <span>{scaleMaxLabel ? `${scaleMax} = ${scaleMaxLabel}` : ""}</span>
         </div>
@@ -58,24 +58,24 @@ export default function RatingChart({
             {/* Rating number */}
             <span
               className="font-bold text-right shrink-0"
-              style={{ color: "#1a3a5c", fontSize: "clamp(48px, 6vw, 80px)", width: "5rem" }}
+              style={{ color: "#1a3a5c", fontSize: "clamp(24px, 3vw, 40px)", width: "3rem" }}
             >
               {v}
             </span>
 
             {/* Bar track */}
-            <div className="flex-1 rounded-full overflow-hidden" style={{ height: "clamp(80px, 10vh, 140px)", backgroundColor: "#e5e7eb" }}>
+            <div className="flex-1 rounded-full overflow-hidden" style={{ height: "clamp(40px, 5vh, 70px)", backgroundColor: "#e5e7eb" }}>
               <div
                 className="h-full rounded-full flex items-center justify-end pr-4"
                 style={{
                   width: `${widthPct}%`,
                   backgroundColor: color,
                   transition: "width 500ms ease-out",
-                  minWidth: count > 0 ? "80px" : "0px",
+                  minWidth: count > 0 ? "40px" : "0px",
                 }}
               >
                 {count > 0 && (
-                  <span className="text-white font-bold tabular-nums" style={{ fontSize: "clamp(36px, 5vw, 60px)" }}>{count}</span>
+                  <span className="text-white font-bold tabular-nums" style={{ fontSize: "clamp(18px, 2.5vw, 30px)" }}>{count}</span>
                 )}
               </div>
             </div>
@@ -91,10 +91,10 @@ export default function RatingChart({
       {/* Average score */}
       {average !== null && (
         <div className="mt-8 text-center">
-          <span className="font-bold" style={{ color: "#e8632b", fontSize: "clamp(120px, 15vw, 180px)" }}>
+          <span className="font-bold" style={{ color: "#e8632b", fontSize: "clamp(60px, 7.5vw, 90px)" }}>
             {average.toFixed(1)}
           </span>
-          <span className="ml-4" style={{ color: "#1a3a5c", opacity: 0.65, fontSize: "clamp(40px, 5vw, 70px)" }}>
+          <span className="ml-4" style={{ color: "#1a3a5c", opacity: 0.65, fontSize: "clamp(20px, 2.5vw, 35px)" }}>
             average
           </span>
         </div>
