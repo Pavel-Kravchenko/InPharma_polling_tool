@@ -231,6 +231,22 @@ export default function PresentationEmbedPage() {
     });
   }
 
+  async function handleResetVotes() {
+    if (!activeQuestion) return;
+    const password = sessionStorage.getItem(ADMIN_STORAGE_KEY);
+    const headers: Record<string, string> = {};
+    if (password) headers["x-admin-password"] = password;
+
+    await fetch(`/api/questions/${activeQuestion.id}/reset`, {
+      method: "POST",
+      headers,
+    });
+    // Fetch fresh (empty) results
+    const r = await fetch(`/api/questions/${activeQuestion.id}/results`);
+    const fresh = await r.json();
+    setResults(fresh);
+  }
+
   async function handleNavigate(direction: "next" | "back") {
     const target = getAdjacentQuestion(direction);
     if (!target) return;
@@ -355,6 +371,15 @@ export default function PresentationEmbedPage() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#f5f0e8" }}>
+      {/* Reset — top left */}
+      <button
+        onClick={handleResetVotes}
+        className="absolute top-3 left-4 px-3 py-1.5 rounded-lg text-xs font-semibold transition-opacity hover:opacity-100"
+        style={{ backgroundColor: "#e74c3c", color: "white", opacity: 0.6 }}
+      >
+        Reset Votes
+      </button>
+
       {/* Branding — top right */}
       <div className="absolute top-3 right-4 select-none" style={{ color: "#1a3a5c", opacity: 0.55 }}>
         <span className="text-sm font-semibold tracking-wide">
