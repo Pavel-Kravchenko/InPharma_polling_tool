@@ -34,15 +34,14 @@ async function main() {
             title: "Are you deciding between academia and an alternative career path?",
             options: JSON.stringify([
               "Leaning towards academia",
-              "Leaning towards an alternative career",
+              "Leaning towards industry",
               "Undecided",
-              "I have already decided",
             ]),
             order: 1,
           },
           {
             type: "word_cloud",
-            title: "What do you hope to gain from this symposium?",
+            title: "What do you hope to gain from this event?",
             order: 2,
           },
           {
@@ -61,19 +60,13 @@ async function main() {
           },
           {
             type: "multiple_choice",
-            title: "What stage of job searching are you in?",
+            title: "Are you currently looking for a job?",
             options: JSON.stringify([
-              "Not started yet",
-              "Exploring options",
-              "Actively applying",
-              "Have offers / decided",
+              "Yes, I am actively searching and applying.",
+              "No, but I will start looking soon.",
+              "No, I have a year or more until I have to look for a job, but I am exploring options.",
             ]),
             order: 5,
-          },
-          {
-            type: "word_cloud",
-            title: "What do you hope to gain from today's event?",
-            order: 6,
           },
         ],
       },
