@@ -79,7 +79,11 @@ export default function WordCloud({ frequency, width, height }: WordCloudProps) 
       .fontWeight("bold")
       .fontSize((d: CloudWord) => {
         const ratio = maxCount > 1 ? (d.value ?? 1) / maxCount : 1;
-        return Math.max(minFontSize, minFontSize + ratio * (maxFontSize - minFontSize));
+        const baseSize = minFontSize + ratio * (maxFontSize - minFontSize);
+        // Shrink font for long text so it fits in the layout
+        const textLen = (d.text ?? "").length;
+        const lengthPenalty = textLen > 10 ? Math.max(0.4, 1 - (textLen - 10) * 0.02) : 1;
+        return Math.max(10, baseSize * lengthPenalty);
       })
       .on("end", (placed: CloudWord[]) => {
         setLayoutWords(
