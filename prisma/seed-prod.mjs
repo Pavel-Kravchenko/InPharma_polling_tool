@@ -59,6 +59,11 @@ async function main() {
             title: "What is your biggest fear about job searching?",
             order: 4,
           },
+          {
+            type: "word_cloud",
+            title: "What do you hope to gain from today's event?",
+            order: 5,
+          },
         ],
       },
     },
