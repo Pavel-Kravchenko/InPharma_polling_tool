@@ -19,8 +19,9 @@ async function main() {
   });
 
   if (existing) {
-    console.log(`Default presentation already exists: "${existing.title}" (room code: ${existing.roomCode})`);
-    return;
+    // Delete old presentation and recreate with updated questions
+    await prisma.presentation.delete({ where: { id: existing.id } });
+    console.log(`Deleted old presentation to recreate with updated questions.`);
   }
 
   const presentation = await prisma.presentation.create({
