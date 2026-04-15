@@ -20,6 +20,7 @@ interface CloudLayout {
   words(w: CloudWord[]): CloudLayout;
   padding(p: number): CloudLayout;
   rotate(fn: () => number): CloudLayout;
+  spiral(s: string): CloudLayout;
   font(f: string): CloudLayout;
   fontWeight(w: string): CloudLayout;
   fontSize(fn: (d: CloudWord) => number): CloudLayout;
@@ -57,8 +58,10 @@ export default function WordCloud({ frequency, width, height }: WordCloudProps) 
     }
 
     const maxCount = Math.max(...entries.map(([, v]) => v));
-    const minFontSize = 14;
-    const maxFontSize = Math.min(width, height) * 0.18;
+    const wordCount = entries.length;
+    const minFontSize = Math.max(50, 70 - wordCount * 1.5);
+    const scaleFactor = Math.max(0.30, 0.90 - wordCount * 0.04);
+    const maxFontSize = Math.min(width, height) * scaleFactor;
 
     const words: CloudWord[] = entries.map(([text, value]) => ({ text, value }));
 
@@ -69,13 +72,14 @@ export default function WordCloud({ frequency, width, height }: WordCloudProps) 
     const layout = cloudLayout()
       .size([width, height])
       .words(words)
-      .padding(6)
-      .rotate(() => (Math.random() > 0.6 ? 90 : 0))
+      .padding(2)
+      .rotate(() => 0)
+      .spiral("rectangular")
       .font("sans-serif")
       .fontWeight("bold")
       .fontSize((d: CloudWord) => {
         const ratio = maxCount > 1 ? (d.value ?? 1) / maxCount : 1;
-        return minFontSize + ratio * (maxFontSize - minFontSize);
+        return Math.max(minFontSize, minFontSize + ratio * (maxFontSize - minFontSize));
       })
       .on("end", (placed: CloudWord[]) => {
         setLayoutWords(

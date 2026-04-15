@@ -301,6 +301,7 @@ function PresentationEditorInner({
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [resettingAll, setResettingAll] = useState(false);
   const [roomCodeCopied, setRoomCodeCopied] = useState(false);
+  const [embedUrlCopied, setEmbedUrlCopied] = useState(false);
 
   const fetchPresentation = useCallback(async () => {
     const res = await authFetch(`/api/presentations/${presentationId}`);
@@ -430,6 +431,14 @@ function PresentationEditorInner({
     });
   }
 
+  function copyPresentationEmbedUrl() {
+    const url = `${window.location.origin}/embed/presentation/${presentationId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setEmbedUrlCopied(true);
+      setTimeout(() => setEmbedUrlCopied(false), 2000);
+    });
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#f5f0e8" }}>
@@ -500,6 +509,17 @@ function PresentationEditorInner({
             <p className="text-sm text-gray-400 mt-2">
               {presentation.questions.length} question{presentation.questions.length !== 1 ? "s" : ""}
             </p>
+            <button
+              onClick={copyPresentationEmbedUrl}
+              className="mt-3 px-4 py-2 rounded-lg text-xs font-semibold border transition-all"
+              style={{
+                borderColor: embedUrlCopied ? "#22c55e" : "#e8632b",
+                color: embedUrlCopied ? "#22c55e" : "#e8632b",
+                backgroundColor: embedUrlCopied ? "#f0fdf4" : "#fff3ee",
+              }}
+            >
+              {embedUrlCopied ? "Copied!" : "Copy Presentation Embed URL"}
+            </button>
           </div>
         </div>
 
@@ -524,38 +544,40 @@ function PresentationEditorInner({
                     borderWidth: q.isActive ? 2 : 1,
                   }}
                 >
-                  <div className="px-5 py-4 flex items-start gap-4">
-                    <div
-                      className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
-                      style={{ backgroundColor: q.isActive ? "#e8632b" : "#1a3a5c" }}
-                    >
-                      {idx + 1}
-                    </div>
+                  <div className="px-5 py-4 flex flex-col sm:flex-row items-start gap-4">
+                    <div className="flex items-start gap-4 w-full">
+                      <div
+                        className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
+                        style={{ backgroundColor: q.isActive ? "#e8632b" : "#1a3a5c" }}
+                      >
+                        {idx + 1}
+                      </div>
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                        <p className="font-medium text-sm" style={{ color: "#1a3a5c" }}>{q.title}</p>
-                        {q.isActive && (
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                          <p className="font-medium text-sm" style={{ color: "#1a3a5c" }}>{q.title}</p>
+                          {q.isActive && (
+                            <span
+                              className="text-xs font-bold px-2 py-0.5 rounded-full text-white"
+                              style={{ backgroundColor: "#e8632b" }}
+                            >
+                              LIVE
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
                           <span
-                            className="text-xs font-bold px-2 py-0.5 rounded-full text-white"
-                            style={{ backgroundColor: "#e8632b" }}
+                            className="px-2 py-0.5 rounded font-medium text-white"
+                            style={{ backgroundColor: TYPE_COLORS[q.type] }}
                           >
-                            LIVE
+                            {TYPE_LABELS[q.type]}
                           </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
-                        <span
-                          className="px-2 py-0.5 rounded font-medium text-white"
-                          style={{ backgroundColor: TYPE_COLORS[q.type] }}
-                        >
-                          {TYPE_LABELS[q.type]}
-                        </span>
-                        <span>{voteCounts[q.id] ?? "..."} votes</span>
+                          <span>{voteCounts[q.id] ?? "..."} votes</span>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
+                    <div className="flex items-center gap-2 flex-shrink-0 flex-wrap w-full sm:w-auto sm:justify-end">
                       <button
                         onClick={() => handleActivate(q.id)}
                         disabled={activating === q.id || q.isActive}
@@ -566,17 +588,6 @@ function PresentationEditorInner({
                         }}
                       >
                         {activating === q.id ? "Activating..." : q.isActive ? "Active" : "Activate"}
-                      </button>
-
-                      <button
-                        onClick={() => copyEmbedUrl(q.id)}
-                        className="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
-                        style={{
-                          borderColor: copiedId === q.id ? "#22c55e" : "#d1d5db",
-                          color: copiedId === q.id ? "#22c55e" : "#6b7280",
-                        }}
-                      >
-                        {copiedId === q.id ? "Copied!" : "Embed URL"}
                       </button>
 
                       <button

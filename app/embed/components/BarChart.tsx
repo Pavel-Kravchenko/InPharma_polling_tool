@@ -13,18 +13,18 @@ export default function BarChart({ counts, options }: BarChartProps) {
   return (
     <div className="flex flex-col items-center w-full px-6">
       {/* Bars row */}
-      <div className="flex items-end justify-center gap-6 w-full" style={{ height: "clamp(250px, 50vh, 500px)" }}>
+      <div className="flex items-end justify-center gap-8 w-full" style={{ height: "clamp(300px, 55vh, 600px)" }}>
         {options.map((option, i) => {
           const count = counts[option] ?? 0;
           const heightPct = (count / maxCount) * 100;
           const color = BAR_COLORS[i % BAR_COLORS.length];
 
           return (
-            <div key={option} className="flex flex-col items-center justify-end flex-1 min-w-0 h-full" style={{ maxWidth: "180px" }}>
+            <div key={option} className="flex flex-col items-center justify-end flex-1 min-w-0 h-full" style={{ maxWidth: "300px" }}>
               {/* Count above bar */}
               <span
-                className="font-bold mb-2 tabular-nums"
-                style={{ color: "#1a3a5c", fontSize: "clamp(20px, 2.5vw, 32px)" }}
+                className="font-bold mb-4 tabular-nums"
+                style={{ color: "#1a3a5c", fontSize: "clamp(100px, 12vw, 160px)" }}
               >
                 {count > 0 ? count : ""}
               </span>
@@ -48,12 +48,12 @@ export default function BarChart({ counts, options }: BarChartProps) {
       <div className="w-full" style={{ height: "2px", backgroundColor: "#1a3a5c", opacity: 0.25 }} />
 
       {/* Labels row */}
-      <div className="flex justify-center gap-6 w-full mt-3">
+      <div className="flex justify-center gap-8 w-full mt-3">
         {options.map((option) => (
-          <div key={option} className="flex-1 min-w-0" style={{ maxWidth: "180px" }}>
+          <div key={option} className="flex-1 min-w-0" style={{ maxWidth: "300px" }}>
             <span
               className="block text-center leading-snug font-medium"
-              style={{ color: "#1a3a5c", fontSize: "clamp(14px, 1.5vw, 20px)", wordBreak: "break-word" }}
+              style={{ color: "#1a3a5c", fontSize: "clamp(70px, 7vw, 100px)", wordBreak: "break-word" }}
             >
               {option}
             </span>

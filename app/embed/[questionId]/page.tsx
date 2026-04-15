@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
+import QRCode from "qrcode";
 import { useEventSource } from "@/lib/useEventSource";
-import BarChart from "./BarChart";
-import WordCloud from "./WordCloud";
-import RatingChart from "./RatingChart";
+import BarChart from "../components/BarChart";
+import WordCloud from "../components/WordCloud";
+import RatingChart from "../components/RatingChart";
 
 interface Question {
   id: string;
@@ -15,6 +16,7 @@ interface Question {
   scaleMax: number | null;
   scaleMinLabel: string | null;
   scaleMaxLabel: string | null;
+  presentation?: { roomCode: string };
 }
 
 interface MultipleChoiceResults {
@@ -65,6 +67,7 @@ export default function EmbedPage() {
   const [question, setQuestion] = useState<Question | null>(null);
   const [results, setResults] = useState<Results | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [qrDataUrl, setQrDataUrl] = useState("");
 
   // For word cloud, track container size
   const vizRef = useRef<HTMLDivElement>(null);
@@ -97,6 +100,10 @@ export default function EmbedPage() {
       .then(([q, r]: [Question, Results]) => {
         setQuestion(q);
         setResults(r);
+        if (q.presentation?.roomCode) {
+          const joinUrl = `${window.location.origin}/join/${q.presentation.roomCode}`;
+          QRCode.toDataURL(joinUrl, { width: 120, margin: 1 }).then(setQrDataUrl);
+        }
       })
       .catch(() => setError("Question not found."));
   }, [questionId]);
@@ -155,7 +162,7 @@ export default function EmbedPage() {
       <div className="px-8 pt-8 pb-4 max-w-4xl w-full mx-auto">
         <h1
           className="font-bold leading-tight"
-          style={{ color: "#1a3a5c", fontSize: "clamp(22px, 3vw, 32px)" }}
+          style={{ color: "#1a3a5c", fontSize: "clamp(44px, 6vw, 64px)" }}
         >
           {question.title}
         </h1>
@@ -189,6 +196,13 @@ export default function EmbedPage() {
           />
         )}
       </div>
+
+      {/* QR code — bottom left */}
+      {qrDataUrl && (
+        <div className="absolute bottom-3 left-4">
+          <img src={qrDataUrl} alt="Join" className="rounded" style={{ width: 80, height: 80, opacity: 0.85 }} />
+        </div>
+      )}
 
       {/* Total count — bottom right, small, gray */}
       <div className="absolute bottom-3 right-4 text-xs text-gray-400 select-none tabular-nums">
